@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <title>Öyle bir düna hâyal et ki...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --latte-base: #303446;
+        --latte-text: #c6d0f5;
+        --latte-subtext: #a5adce;
+        --latte-surface: #414559;
+        --latte-accent: #81c8be;
+        --latte-blue: #8caaee;
+        --latte-green: #a6d189;
+      }
+
+      body {
+        background-color: var(--latte-base);
+        color: var(--latte-text);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      a {
+        color: var(--latte-blue);
+        transition: color 0.3s;
+      }
+
+      a:hover {
+        color: var(--latte-accent);
+      }
+
+      /* Zoom %110-149 ve dikey ekranlar için alt alta geç */
+      @media screen and (min-width: 769px) and (max-width: 1024px) and (max-aspect-ratio: 4/3) {
+        .force-responsive {
+          flex-direction: column !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="flex flex-col items-center min-h-screen px-4 py-8">
+
+    <!-- PFP + Sayaç -->
+    <div class="flex flex-col md:flex-row items-center justify-center gap-8 bg-[color:var(--latte-surface)] p-6 rounded-2xl shadow-md mt-4 force-responsive">
+      <!-- GitHub profil bilgileri -->
+      <div id="profile" class="flex flex-col items-center gap-2 max-w-xs w-full">
+        <img id="avatar" src="" alt="Profil Resmi" class="w-28 h-28 rounded-full shadow-lg border-4 border-[color:var(--latte-accent)]" />
+        <h1 id="username" class="text-2xl font-bold text-center"></h1>
+      </div>
+
+      <!-- Sayaç -->
+      <div class="text-center max-w-xs w-full">
+        <p class="text-lg text-[color:var(--latte-subtext)] mb-2">Hoş geldin yolcu</p>
+        <img 
+          src="https://count.getloli.com/@dpentx?name=plexa&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1"
+          alt="ziyaretçi sayısı"
+          class="mx-auto"
+        />
+      </div>
+    </div>
+
+    <!-- Hakkında kısmı -->
+    <section class="mt-8 max-w-xl text-center bg-[color:var(--latte-surface)] p-6 rounded-xl shadow">
+      <p class="text-lg text-[color:var(--latte-subtext)]">
+       <strong></strong> NixOS ile ilgilenen ve çeviri yapan biriyim.
+      </p>
+    </section>
+
+    <!-- Sosyal medya linkleri -->
+    <footer class="mt-8 max-w-xl w-full text-center bg-[color:var(--latte-surface)] p-6 rounded-xl shadow">
+     <div class="flex flex-col sm:flex-row justify-center gap-6">
+      <a href="https://myanimelist.net/profile/dpenx" target="_blank">
+        <i class="fa-solid fa-book-journal-whills"></i> MyAnimeList
+      </a>
+      <a href="https://anilist.co/user/NixelTP/" target="_blank">
+        <i class="fa-solid fa-book-journal-whills"></i> AniList
+      </a>
+      <a href="https://github.com/dpentx" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+      </a>
+     </div>
+    </footer>
+
+    <!-- GitHub veri çekici -->
+    <script>
+      const githubUsername = "dpentx";
+
+      fetch(`https://api.github.com/users/${githubUsername}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("GitHub verisi alınamadı.");
+          return res.json();
+        })
+        .then((data) => {
+          document.getElementById("username").textContent = data.name || data.login;
+          document.getElementById("avatar").src = data.avatar_url;
+        })
+        .catch((err) => {
+          document.getElementById("username").textContent = "GitHub kullanıcı adı yüklenemedi";
+          console.error(err);
+        });
+    </script>
+  </body>
+</html>
