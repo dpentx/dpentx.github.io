@@ -651,7 +651,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script>
       const githubUsername = "dpentx";
-      const githubUsername2 = "dtxapplist";
       const repoName = "dpentx.github.io";
 
       // Optimized tab navigation
@@ -677,12 +676,19 @@
           
           document.getElementById("username").textContent = data.name || data.login;
           document.getElementById("avatar").src = data.avatar_url;
-          document.getElementById("repo-count").textContent = data.public_repos;
           
-          // Get total stars
-          const reposResponse = await fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`);
-          const repos = await reposResponse.json();
-          const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+          // İki hesaptan toplam repo ve star sayısını al
+          const [reposResponse1, reposResponse2] = await Promise.all([
+            fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`),
+            fetch(`https://api.github.com/users/${githubUsername2}/repos?per_page=100`)
+          ]);
+          const repos1 = await reposResponse1.json();
+          const repos2 = await reposResponse2.json();
+          const allUserRepos = [...repos1, ...repos2];
+          const totalRepos = allUserRepos.length;
+          const totalStars = allUserRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+
+          document.getElementById("repo-count").textContent = totalRepos;
           document.getElementById("stars-count").textContent = totalStars;
           
         } catch (error) {
@@ -696,10 +702,7 @@
       // Blog yazılarını çek
       async function loadBlogs() {
         try {
-          const [response1, response2] = await Promise.all([
-             fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=6`),
-             fetch(`https://api.github.com/users/${githubUsername2}/repos?sort=updated&per_page=6`)
-            ]);
+          const response = await fetch(`https://api.github.com/repos/${githubUsername}/${repoName}/contents/blog`);
           
           if (!response.ok) {
             throw new Error('Blog klasörü bulunamadı');
@@ -770,15 +773,27 @@
         }
       }
 
-      // GitHub projelerini çek
+      // GitHub projelerini çek (İki hesaptan)
       async function loadProjects() {
         try {
-          const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=12`);
-          const repos = await response.json();
+          // İki hesaptan da repo çek
+          const [response1, response2] = await Promise.all([
+            fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=20`),
+            fetch(`https://api.github.com/users/${githubUsername2}/repos?sort=updated&per_page=20`)
+          ]);
+          
+          const repos1 = await response1.json();
+          const repos2 = await response2.json();
+          
+          // İki hesabın repolarını birleştir ve tarih sırasına göre sırala
+          const allRepos = [...repos1, ...repos2]
+            .filter(repo => !repo.fork) // Fork'ları filtrele
+            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+            .slice(0, 12); // En güncel 12 proje
           
           document.getElementById('projects-loading').style.display = 'none';
           
-          if (repos.length === 0) {
+          if (allRepos.length === 0) {
             document.getElementById('no-projects').style.display = 'block';
             return;
           }
@@ -786,14 +801,17 @@
           const projectsContainer = document.getElementById('projects-container');
           projectsContainer.style.display = 'grid';
           
-          repos.forEach(repo => {
-            if (repo.fork) return; // Skip forked repos
-            
+          allRepos.forEach(repo => {
             const projectCard = document.createElement('div');
             projectCard.className = 'project-card';
             projectCard.onclick = () => window.open(repo.html_url, '_blank');
             
             const updatedDate = new Date(repo.updated_at).toLocaleDateString('tr-TR');
+            
+            // Hangi hesaptan geldiğini göster - dpentx yeşil, dtxapplist mor
+            const accountBadge = repo.owner.login === githubUsername ? 
+              '<span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full"><i class="fab fa-github mr-1"></i>dpentx</span>' :
+              '<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full"><i class="fab fa-github mr-1"></i>dtxapplist</span>';
             
             projectCard.innerHTML = `
               <div class="flex justify-between items-start mb-4">
@@ -810,16 +828,17 @@
               </div>
               
               <p class="text-gray-300 mb-4 text-sm leading-relaxed">
-                ${repo.description || 'Bu proje için henüz açıklama eklenmemiş.'}
+                ${repo.description || '📝 Açıklama eklenmemiş - GitHub\'da repo ayarlarından "About" bölümüne açıklama ekleyebilirsin!'}
               </p>
               
               <div class="flex flex-wrap gap-2 mb-4">
-                ${repo.language ? `<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">
+                ${accountBadge}
+                ${repo.language ? `<span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full">
                   <i class="fas fa-code mr-1"></i>
                   ${repo.language}
                 </span>` : ''}
                 ${repo.topics.slice(0, 2).map(topic => 
-                  `<span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+                  `<span class="text-xs bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full">
                     #${topic}
                   </span>`
                 ).join('')}
@@ -974,4 +993,4 @@
       });
     </script>
   </body>
-              </html>
+</html>
