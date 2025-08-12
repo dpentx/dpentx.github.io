@@ -544,6 +544,11 @@
           <div id="no-projects" class="text-center text-gray-400" style="display: none;">
             <i class="fas fa-code text-6xl mb-6 opacity-50"></i>
             <p class="text-xl">Henüz proje bulunmuyor.</p>
+            <div id="debug-info" class="mt-4 p-4 bg-gray-800 rounded-lg text-left text-xs">
+              <p><strong>🔍 Debug Bilgisi:</strong></p>
+              <p id="api-status">API durumu kontrol ediliyor...</p>
+              <p id="repo-info">Repo bilgisi kontrol ediliyor...</p>
+            </div>
           </div>
         </div>
       </section>
@@ -647,10 +652,86 @@
       </div>
     </div>
 
+    <!-- Debug Console (Mobile) -->
+    <div id="mobile-console" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.9); color: #00ff00; font-family: monospace; font-size: 12px; padding: 10px; z-index: 9999; border-top: 2px solid #333;">
+      <div style="display: flex; justify-content: between; margin-bottom: 10px;">
+        <strong>🐛 Debug Console</strong>
+        <button onclick="clearMobileConsole()" style="background: #ff4444; color: white; border: none; padding: 5px; margin-left: 10px; border-radius: 3px;">Temizle</button>
+        <button onclick="toggleMobileConsole()" style="background: #4444ff; color: white; border: none; padding: 5px; margin-left: 5px; border-radius: 3px;">Gizle</button>
+      </div>
+      <div id="console-content"></div>
+    </div>
+
+    <!-- Debug Toggle Button -->
+    <button id="debug-toggle" onclick="toggleMobileConsole()" style="position: fixed; bottom: 20px; right: 20px; background: #ff6600; color: white; border: none; padding: 15px; border-radius: 50%; font-size: 18px; z-index: 9998; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+      🐛
+    </button>
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script>
+      // Mobile Debug Console Functions
+      function mobileLog(message, type = 'log') {
+        const console_div = document.getElementById('console-content');
+        const time = new Date().toLocaleTimeString();
+        const colors = {
+          log: '#00ff00',
+          error: '#ff4444', 
+          warn: '#ffaa00',
+          info: '#4488ff'
+        };
+        
+        const logEntry = document.createElement('div');
+        logEntry.style.color = colors[type] || '#00ff00';
+        logEntry.style.marginBottom = '5px';
+        logEntry.style.fontSize = '11px';
+        logEntry.innerHTML = `[${time}] ${message}`;
+        
+        console_div.appendChild(logEntry);
+        console_div.scrollTop = console_div.scrollHeight;
+        
+        // Orijinal console'a da yazdır
+        console[type](message);
+      }
+
+      function toggleMobileConsole() {
+        const console_div = document.getElementById('mobile-console');
+        const isVisible = console_div.style.display !== 'none';
+        console_div.style.display = isVisible ? 'none' : 'block';
+        
+        if (!isVisible) {
+          mobileLog('🚀 Debug console açıldı!', 'info');
+        }
+      }
+
+      function clearMobileConsole() {
+        document.getElementById('console-content').innerHTML = '';
+        mobileLog('🧹 Console temizlendi', 'info');
+      }
+
+      // Console override for mobile debugging
+      const originalLog = console.log;
+      const originalError = console.error;
+      const originalWarn = console.warn;
+      
+      console.log = function(...args) {
+        mobileLog(args.join(' '), 'log');
+        originalLog.apply(console, args);
+      };
+      
+      console.error = function(...args) {
+        mobileLog('❌ ' + args.join(' '), 'error');
+        originalError.apply(console, args);
+      };
+      
+      console.warn = function(...args) {
+        mobileLog('⚠️ ' + args.join(' '), 'warn');
+        originalWarn.apply(console, args);
+      };
+
+      // GitHub kullanıcı adları
       const githubUsername = "dpentx";
+      const githubUsername2 = "dtxapplist"; // İkinci GitHub hesabınız varsa
       const repoName = "dpentx.github.io";
 
       // Optimized tab navigation
@@ -682,8 +763,10 @@
             fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`),
             fetch(`https://api.github.com/users/${githubUsername2}/repos?per_page=100`)
           ]);
-          const repos1 = await reposResponse1.json();
-          const repos2 = await reposResponse2.json();
+          
+          const repos1 = reposResponse1.ok ? await reposResponse1.json() : [];
+          const repos2 = reposResponse2.ok ? await reposResponse2.json() : [];
+          
           const allUserRepos = [...repos1, ...repos2];
           const totalRepos = allUserRepos.length;
           const totalStars = allUserRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
@@ -695,7 +778,7 @@
           document.getElementById("username").textContent = "GitHub kullanıcı adı yüklenemedi";
           document.getElementById("repo-count").textContent = "0";
           document.getElementById("stars-count").textContent = "0";
-          console.error(error);
+          console.error('Profil yükleme hatası:', error);
         }
       }
 
@@ -773,96 +856,157 @@
         }
       }
 
-      // GitHub projelerini çek (İki hesaptan)
+      // GitHub projelerini çek - Yenilenmiş basit versiyon
       async function loadProjects() {
+        const projectsLoading = document.getElementById('projects-loading');
+        const projectsContainer = document.getElementById('projects-container');
+        const noProjects = document.getElementById('no-projects');
+        
         try {
-          // İki hesaptan da repo çek
-          const [response1, response2] = await Promise.all([
-            fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=20`),
-            fetch(`https://api.github.com/users/${githubUsername2}/repos?sort=updated&per_page=20`)
-          ]);
+          mobileLog('🚀 Projeler yüklenmeye başladı');
           
-          const repos1 = await response1.json();
-          const repos2 = await response2.json();
+          // Önce ana hesaptan repo çek
+          const mainResponse = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=50`);
+          mobileLog(`📡 Ana hesap API yanıtı: ${mainResponse.status}`);
           
-          // İki hesabın repolarını birleştir ve tarih sırasına göre sırala
-          const allRepos = [...repos1, ...repos2]
-            .filter(repo => !repo.fork) // Fork'ları filtrele
+          if (!mainResponse.ok) {
+            throw new Error(`API Hatası: ${mainResponse.status} - ${mainResponse.statusText}`);
+          }
+          
+          const mainRepos = await mainResponse.json();
+          mobileLog(`📦 Ana hesaptan ${mainRepos.length} repo alındı`);
+          
+          // İkinci hesap varsa ondan da al (hata olursa devam et)
+          let secondRepos = [];
+          try {
+            if (githubUsername2 && githubUsername2 !== githubUsername) {
+              const secondResponse = await fetch(`https://api.github.com/users/${githubUsername2}/repos?sort=updated&per_page=50`);
+              if (secondResponse.ok) {
+                secondRepos = await secondResponse.json();
+                mobileLog(`📦 İkinci hesaptan ${secondRepos.length} repo alındı`);
+              } else {
+                mobileLog(`⚠️ İkinci hesap yanıtı başarısız: ${secondResponse.status}`, 'warn');
+              }
+            }
+          } catch (secondError) {
+            mobileLog(`⚠️ İkinci hesap hatası: ${secondError.message}`, 'warn');
+          }
+          
+          // Tüm repoları birleştir
+          const allRepos = [...mainRepos, ...secondRepos];
+          mobileLog(`📊 Toplam repo sayısı: ${allRepos.length}`);
+          
+          // Fork'ları filtrele ve sırala
+          const filteredRepos = allRepos
+            .filter(repo => {
+              const isNotFork = !repo.fork;
+              const isNotEmpty = repo.size > 0; // Boş repoları filtrele
+              return isNotFork && isNotEmpty;
+            })
             .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-            .slice(0, 12); // En güncel 12 proje
+            .slice(0, 12);
           
-          document.getElementById('projects-loading').style.display = 'none';
+          mobileLog(`✅ Gösterilecek proje sayısı: ${filteredRepos.length}`);
           
-          if (allRepos.length === 0) {
-            document.getElementById('no-projects').style.display = 'block';
+          // Loading'i gizle
+          projectsLoading.style.display = 'none';
+          
+          // Proje yoksa mesaj göster
+          if (filteredRepos.length === 0) {
+            noProjects.style.display = 'block';
+            document.getElementById('api-status').textContent = `✅ API çalışıyor (${mainRepos.length + secondRepos.length} repo bulundu)`;
+            document.getElementById('repo-info').textContent = `❌ Gösterilecek proje yok (tümü fork veya boş)`;
             return;
           }
           
-          const projectsContainer = document.getElementById('projects-container');
+          // Proje kartlarını oluştur
           projectsContainer.style.display = 'grid';
+          projectsContainer.innerHTML = ''; // Temizle
           
-          allRepos.forEach(repo => {
-            const projectCard = document.createElement('div');
-            projectCard.className = 'project-card';
-            projectCard.onclick = () => window.open(repo.html_url, '_blank');
+          filteredRepos.forEach((repo, index) => {
+            mobileLog(`🎨 Kart oluşturuluyor: ${repo.name}`);
             
-            const updatedDate = new Date(repo.updated_at).toLocaleDateString('tr-TR');
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.onclick = () => {
+              mobileLog(`🔗 Repo açılıyor: ${repo.html_url}`);
+              window.open(repo.html_url, '_blank');
+            };
             
-            // Hangi hesaptan geldiğini göster - dpentx yeşil, dtxapplist mor
-            const accountBadge = repo.owner.login === githubUsername ? 
+            const updateDate = new Date(repo.updated_at).toLocaleDateString('tr-TR', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+            
+            // Hesap badge'i
+            const isMainAccount = repo.owner.login === githubUsername;
+            const accountBadge = isMainAccount ? 
               '<span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full"><i class="fab fa-github mr-1"></i>dpentx</span>' :
-              '<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full"><i class="fab fa-github mr-1"></i>dtxapplist</span>';
+              '<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full"><i class="fab fa-github mr-1"></i>ikinci</span>';
             
-            projectCard.innerHTML = `
+            // Dil badge'i
+            const languageBadge = repo.language ? 
+              `<span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full">
+                <i class="fas fa-code mr-1"></i>${repo.language}
+              </span>` : '';
+            
+            // Topics (ilk 2 tanesi)
+            const topicBadges = (repo.topics || []).slice(0, 2).map(topic => 
+              `<span class="text-xs bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full">#${topic}</span>`
+            ).join(' ');
+            
+            card.innerHTML = `
               <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-green-400 flex-1">
-                  <i class="fas fa-folder mr-2"></i>
-                  ${repo.name}
+                <h3 class="text-xl font-bold text-green-400 flex-1 mr-2">
+                  <i class="fas fa-folder mr-2"></i>${repo.name}
                 </h3>
-                <div class="flex items-center space-x-2">
-                  <span class="text-sm text-gray-400">
-                    <i class="fas fa-star mr-1"></i>
-                    ${repo.stargazers_count}
-                  </span>
+                <div class="flex items-center space-x-2 text-sm text-gray-400">
+                  <span><i class="fas fa-star mr-1"></i>${repo.stargazers_count}</span>
+                  <span><i class="fas fa-code-fork mr-1"></i>${repo.forks_count}</span>
                 </div>
               </div>
               
-              <p class="text-gray-300 mb-4 text-sm leading-relaxed">
-                ${repo.description || '📝 Açıklama eklenmemiş - GitHub\'da repo ayarlarından "About" bölümüne açıklama ekleyebilirsin!'}
+              <p class="text-gray-300 mb-4 text-sm leading-relaxed min-h-[2.5rem]">
+                ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
-              <div class="flex flex-wrap gap-2 mb-4">
+              <div class="flex flex-wrap gap-2 mb-4 min-h-[2rem]">
                 ${accountBadge}
-                ${repo.language ? `<span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full">
-                  <i class="fas fa-code mr-1"></i>
-                  ${repo.language}
-                </span>` : ''}
-                ${repo.topics.slice(0, 2).map(topic => 
-                  `<span class="text-xs bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full">
-                    #${topic}
-                  </span>`
-                ).join('')}
+                ${languageBadge}
+                ${topicBadges}
               </div>
               
-              <div class="flex justify-between items-center text-xs text-gray-400">
-                <span>
-                  <i class="fas fa-clock mr-1"></i>
-                  ${updatedDate}
-                </span>
-                <span class="text-green-400">
-                  <i class="fas fa-external-link-alt mr-1"></i>
-                  Görüntüle
-                </span>
+              <div class="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-gray-600">
+                <span><i class="fas fa-clock mr-1"></i>${updateDate}</span>
+                <span class="text-green-400"><i class="fas fa-external-link-alt mr-1"></i>Görüntüle</span>
               </div>
             `;
             
-            projectsContainer.appendChild(projectCard);
+            projectsContainer.appendChild(card);
           });
           
+          mobileLog(`🎉 ${filteredRepos.length} proje başarıyla yüklendi!`);
+          
         } catch (error) {
-          console.error('Proje yükleme hatası:', error);
-          document.getElementById('projects-loading').style.display = 'none';
-          document.getElementById('no-projects').style.display = 'block';
+          mobileLog(`❌ HATA: ${error.message}`, 'error');
+          
+          // Hata durumunda UI'ı güncelle
+          projectsLoading.style.display = 'none';
+          noProjects.style.display = 'block';
+          noProjects.innerHTML = `
+            <div class="text-center">
+              <i class="fas fa-exclamation-triangle text-6xl mb-6 text-red-400 opacity-50"></i>
+              <p class="text-xl mb-4 text-red-400">Projeler yüklenirken hata oluştu</p>
+              <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-left">
+                <p class="text-sm mb-2"><strong>Hata:</strong></p>
+                <code class="text-xs text-red-300">${error.message}</code>
+                <p class="text-xs text-gray-400 mt-3">
+                  🐛 Sağ alttaki debug butonuna tıklayarak detayları görebilirsin
+                </p>
+              </div>
+            </div>
+          `;
         }
       }
 
@@ -993,4 +1137,4 @@
       });
     </script>
   </body>
-</html>
+                </html>
