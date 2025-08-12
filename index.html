@@ -646,6 +646,7 @@
     <script>
       // GitHub kullanıcı adları
       const githubUsername = "dpentx";
+      const githubUsername2 = "dtxapplist";
       const repoName = "dpentx.github.io";
 
       // Tab navigation
@@ -670,12 +671,20 @@
           document.getElementById("username").textContent = data.name || data.login;
           document.getElementById("avatar").src = data.avatar_url;
           
-          // Repo sayısını çek
-          const reposResponse = await fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`);
-          const repos = await reposResponse.json();
-          const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+          // İki hesaptan toplam repo ve star sayısını al
+          const [reposResponse1, reposResponse2] = await Promise.all([
+            fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`),
+            fetch(`https://api.github.com/users/${githubUsername2}/repos?per_page=100`)
+          ]);
+          
+          const repos1 = reposResponse1.ok ? await reposResponse1.json() : [];
+          const repos2 = reposResponse2.ok ? await reposResponse2.json() : [];
+          
+          const allUserRepos = [...repos1, ...repos2];
+          const totalRepos = allUserRepos.length;
+          const totalStars = allUserRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
 
-          document.getElementById("repo-count").textContent = repos.length;
+          document.getElementById("repo-count").textContent = totalRepos;
           document.getElementById("stars-count").textContent = totalStars;
           
         } catch (error) {
@@ -759,7 +768,7 @@
         }
       }
 
-      // GitHub projelerini çek - Düzeltilmiş versiyon
+      // GitHub projelerini çek - İki hesabı birleştiren versiyon
       async function loadProjects() {
         const projectsLoading = document.getElementById('projects-loading');
         const projectsContainer = document.getElementById('projects-container');
@@ -768,18 +777,27 @@
         try {
           console.log('Projeler yükleniyor...');
           
-          const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`);
-          console.log('API yanıt kodu:', response.status);
+          // İki hesaptan da repoları çek
+          const [response1, response2] = await Promise.all([
+            fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`),
+            fetch(`https://api.github.com/users/${githubUsername2}/repos?sort=updated&per_page=100`)
+          ]);
           
-          if (!response.ok) {
-            throw new Error(`GitHub API hatası: ${response.status}`);
-          }
+          console.log('Ana hesap API yanıtı:', response1.status);
+          console.log('İkinci hesap API yanıtı:', response2.status);
           
-          const repos = await response.json();
-          console.log('Toplam repo sayısı:', repos.length);
+          const repos1 = response1.ok ? await response1.json() : [];
+          const repos2 = response2.ok ? await response2.json() : [];
+          
+          console.log(`${githubUsername} hesabından ${repos1.length} repo`);
+          console.log(`${githubUsername2} hesabından ${repos2.length} repo`);
+          
+          // Tüm repoları birleştir
+          const allRepos = [...repos1, ...repos2];
+          console.log('Toplam repo sayısı:', allRepos.length);
           
           // Fork olmayan ve boş olmayan repoları filtrele
-          const filteredRepos = repos
+          const filteredRepos = allRepos
             .filter(repo => !repo.fork && repo.size > 0)
             .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
             .slice(0, 12);
@@ -802,6 +820,16 @@
               month: 'short',
               day: 'numeric'
             });
+            
+            // Hangi hesaptan geldiğini göster
+            const isMainAccount = repo.owner.login === githubUsername;
+            const accountBadge = isMainAccount ? 
+              `<span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+                <i class="fab fa-github mr-1"></i>${githubUsername}
+              </span>` :
+              `<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">
+                <i class="fab fa-github mr-1"></i>${githubUsername2}
+              </span>`;
             
             const languageBadge = repo.language ? 
               `<span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full">
@@ -831,7 +859,8 @@
                 ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
-              <div class="flex flex-wrap gap-2 mb-4 min-h-[2rem]">
+              <div class="flex flex-wrap justify-center gap-2 mb-4 min-h-[2rem]">
+                ${accountBadge}
                 ${languageBadge}
                 ${topicBadges}
               </div>
