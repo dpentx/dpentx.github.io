@@ -35,10 +35,105 @@
         color: var(--latte-accent);
       }
 
+      .blog-card {
+        background: var(--latte-surface);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .blog-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(129, 200, 190, 0.2);
+      }
+
+      .blog-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--latte-accent), var(--latte-blue));
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(48, 52, 70, 0.95);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      .modal-content {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: var(--latte-surface);
+        border-radius: 16px;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--latte-accent);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        font-size: 18px;
+        color: var(--latte-base);
+      }
+
+      .markdown-content {
+        line-height: 1.7;
+      }
+
+      .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+        color: var(--latte-accent);
+        margin: 1.5em 0 0.5em 0;
+      }
+
+      .markdown-content p {
+        margin: 1em 0;
+      }
+
+      .markdown-content code {
+        background: var(--latte-base);
+        padding: 0.2em 0.4em;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+      }
+
+      .markdown-content pre {
+        background: var(--latte-base);
+        padding: 1em;
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+
+      .loading {
+        text-align: center;
+        color: var(--latte-subtext);
+      }
+
       /* Zoom %110-149 ve dikey ekranlar için alt alta geç */
       @media screen and (min-width: 769px) and (max-width: 1024px) and (max-aspect-ratio: 4/3) {
         .force-responsive {
           flex-direction: column !important;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .modal-content {
+          margin: 1rem;
+          padding: 1.5rem;
         }
       }
     </style>
@@ -71,6 +166,24 @@
       </p>
     </section>
 
+    <!-- Blog Yazıları -->
+    <section class="mt-8 max-w-4xl w-full">
+      <h2 class="text-2xl font-bold text-center mb-6 text-[color:var(--latte-accent)]">
+        <i class="fas fa-blog mr-2"></i>Blog Yazıları
+      </h2>
+      
+      <div id="blog-loading" class="loading">
+        <i class="fas fa-spinner fa-spin mr-2"></i>Blog yazıları yükleniyor...
+      </div>
+      
+      <div id="blog-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></div>
+      
+      <div id="no-blogs" class="text-center text-[color:var(--latte-subtext)]" style="display: none;">
+        <i class="fas fa-file-alt text-4xl mb-4"></i>
+        <p>Henüz blog yazısı bulunmuyor.</p>
+      </div>
+    </section>
+
     <!-- Sosyal medya linkleri -->
     <footer class="mt-8 max-w-xl w-full text-center bg-[color:var(--latte-surface)] p-6 rounded-xl shadow">
      <div class="flex flex-col sm:flex-row justify-center gap-6">
@@ -86,10 +199,27 @@
      </div>
     </footer>
 
-    <!-- GitHub veri çekici -->
+    <!-- Blog Modal -->
+    <div id="blog-modal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeBlogModal()">
+          <i class="fas fa-times"></i>
+        </button>
+        <div id="modal-blog-content" class="markdown-content">
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin mr-2"></i>İçerik yükleniyor...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script>
       const githubUsername = "dpentx";
+      const repoName = "dpentx.github.io"; // Repo adınızı buraya yazın
 
+      // GitHub profil bilgilerini çek
       fetch(`https://api.github.com/users/${githubUsername}`)
         .then((res) => {
           if (!res.ok) throw new Error("GitHub verisi alınamadı.");
@@ -103,6 +233,136 @@
           document.getElementById("username").textContent = "GitHub kullanıcı adı yüklenemedi";
           console.error(err);
         });
+
+      // Blog yazılarını çek
+      async function loadBlogs() {
+        try {
+          const response = await fetch(`https://api.github.com/repos/${githubUsername}/${repoName}/contents/blog`);
+          
+          if (!response.ok) {
+            throw new Error('Blog klasörü bulunamadı');
+          }
+          
+          const files = await response.json();
+          const markdownFiles = files.filter(file => 
+            file.name.endsWith('.md') && file.type === 'file'
+          );
+          
+          document.getElementById('blog-loading').style.display = 'none';
+          
+          if (markdownFiles.length === 0) {
+            document.getElementById('no-blogs').style.display = 'block';
+            return;
+          }
+          
+          const blogContainer = document.getElementById('blog-container');
+          blogContainer.style.display = 'grid';
+          
+          for (const file of markdownFiles) {
+            const blogTitle = file.name.replace('.md', '');
+            const imagePath = `shot/${blogTitle}.jpg`; // veya .png
+            
+            const blogCard = document.createElement('div');
+            blogCard.className = 'blog-card';
+            blogCard.onclick = () => openBlogModal(file.download_url, blogTitle);
+            
+            // Görselin var olup olmadığını kontrol et
+            const imageExists = await checkImageExists(imagePath);
+            
+            blogCard.innerHTML = `
+              <img 
+                src="${imageExists ? imagePath : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="200" viewBox="0 0 100 200"><rect width="100" height="200" fill="%2381c8be"/><text x="50" y="100" text-anchor="middle" fill="%23303446" font-size="14" font-family="Arial">Blog</text></svg>'}" 
+                alt="${blogTitle}" 
+                class="blog-image"
+                onerror="this.src='data:image/svg+xml,<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"100\\" height=\\"200\\" viewBox=\\"0 0 100 200\\"><rect width=\\"100\\" height=\\"200\\" fill=\\"%2381c8be\\"/><text x=\\"50\\" y=\\"100\\" text-anchor=\\"middle\\" fill=\\"%23303446\\" font-size=\\"14\\" font-family=\\"Arial\\">Blog</text></svg>'"
+              />
+              <div class="p-4">
+                <h3 class="text-lg font-semibold mb-2 text-[color:var(--latte-accent)]">
+                  ${blogTitle}
+                </h3>
+                <p class="text-sm text-[color:var(--latte-subtext)]">
+                  <i class="fas fa-calendar mr-1"></i>
+                  Blog yazısını okumak için tıklayın
+                </p>
+              </div>
+            `;
+            
+            blogContainer.appendChild(blogCard);
+          }
+          
+        } catch (error) {
+          console.error('Blog yükleme hatası:', error);
+          document.getElementById('blog-loading').style.display = 'none';
+          document.getElementById('no-blogs').style.display = 'block';
+        }
+      }
+
+      // Görsel varlığını kontrol et
+      async function checkImageExists(imagePath) {
+        try {
+          const response = await fetch(`https://api.github.com/repos/${githubUsername}/${repoName}/contents/${imagePath}`);
+          return response.ok;
+        } catch {
+          return false;
+        }
+      }
+
+      // Blog modalını aç
+      async function openBlogModal(fileUrl, title) {
+        const modal = document.getElementById('blog-modal');
+        const content = document.getElementById('modal-blog-content');
+        
+        modal.style.display = 'block';
+        content.innerHTML = `
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin mr-2"></i>İçerik yükleniyor...
+          </div>
+        `;
+        
+        try {
+          const response = await fetch(fileUrl);
+          const markdown = await response.text();
+          const html = marked.parse(markdown);
+          
+          content.innerHTML = `
+            <h1 class="text-3xl font-bold mb-6 text-[color:var(--latte-accent)]">
+              ${title}
+            </h1>
+            <div class="markdown-content">
+              ${html}
+            </div>
+          `;
+        } catch (error) {
+          content.innerHTML = `
+            <div class="text-center text-red-400">
+              <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+              <p>İçerik yüklenirken hata oluştu.</p>
+            </div>
+          `;
+        }
+      }
+
+      // Blog modalını kapat
+      function closeBlogModal() {
+        document.getElementById('blog-modal').style.display = 'none';
+      }
+
+      // Modal dışına tıklanınca kapat
+      document.getElementById('blog-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeBlogModal();
+        }
+      });
+
+      // ESC tuşu ile modalı kapat
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeBlogModal();
+        }
+      });
+
+      // Sayfa yüklenince blogları getir
+      loadBlogs();
     </script>
   </body>
 </html>
