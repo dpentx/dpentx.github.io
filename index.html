@@ -814,7 +814,17 @@
               day: 'numeric'
             });
             
-            const topicBadges = (repo.topics || []).slice(0, 3).map(topic => 
+            // Hangi hesaptan geldiğini göster - dpentx yeşil, dtxapplist mor
+            const isMainAccount = repo.owner.login === githubUsername;
+            const accountBadge = isMainAccount ? 
+              `<span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full">
+                <i class="fab fa-github mr-1"></i>${githubUsername}
+              </span>` :
+              `<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">
+                <i class="fab fa-github mr-1"></i>${githubUsername2}
+              </span>`;
+            
+            const topicBadges = (repo.topics || []).slice(0, 2).map(topic => 
               `<span class="text-xs bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full">#${topic}</span>`
             ).join(' ');
             
@@ -838,6 +848,7 @@
               </p>
               
               <div class="flex flex-wrap justify-start gap-2 mb-4 min-h-[2rem]">
+                ${accountBadge}
                 ${topicBadges}
               </div>
               
