@@ -52,10 +52,11 @@
         flex-wrap: nowrap;
         justify-content: center;
         gap: 0.5rem;
-        padding: 0.75rem;
+        padding: 0.75rem 1rem;
         overflow-x: auto;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        min-width: 0; /* Flexbox fix */
       }
 
       .nav-tabs::-webkit-scrollbar {
@@ -64,7 +65,7 @@
 
       .nav-tab {
         position: relative;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 0.8rem;
         cursor: pointer;
         transition: color 0.2s ease, background-color 0.2s ease;
         border-radius: 6px;
@@ -72,6 +73,8 @@
         font-size: 0.875rem;
         white-space: nowrap;
         flex-shrink: 0;
+        min-width: fit-content;
+        text-align: center;
       }
 
       .nav-tab:hover {
@@ -302,17 +305,19 @@
       /* Mobile optimizations */
       @media (max-width: 768px) {
         .nav-container {
-          margin: 0.5rem;
+          margin: 0.5rem 0.25rem;
         }
         
         .nav-tabs {
-          padding: 0.5rem;
+          padding: 0.5rem 0.75rem;
           gap: 0.25rem;
+          justify-content: flex-start; /* Mobile'da sola hizala */
         }
 
         .nav-tab {
           font-size: 0.8rem;
-          padding: 0.4rem 0.8rem;
+          padding: 0.4rem 0.6rem;
+          min-width: auto;
         }
         
         .modal-content {
@@ -965,4 +970,4 @@
       });
     </script>
   </body>
-  </html>
+              </html>
