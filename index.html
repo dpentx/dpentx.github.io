@@ -37,7 +37,6 @@
         min-height: 100vh;
       }
 
-      /* Navigation */
       .nav-container {
         backdrop-filter: blur(10px);
         background: rgba(26, 29, 41, 0.9);
@@ -87,7 +86,6 @@
         box-shadow: 0 2px 10px var(--glow-blue);
       }
 
-      /* Content sections */
       .content-section {
         display: none;
         animation: fadeIn 0.3s ease-out;
@@ -106,7 +104,6 @@
         }
       }
 
-      /* Cards */
       .glass-card {
         background: rgba(37, 40, 55, 0.7);
         backdrop-filter: blur(10px);
@@ -196,7 +193,6 @@
         border-color: var(--accent-green);
       }
 
-      /* Modal */
       .modal {
         display: none;
         position: fixed;
@@ -296,7 +292,6 @@
         padding: 2rem;
       }
 
-      /* Mobile */
       @media (max-width: 768px) {
         .nav-container {
           margin: 0.5rem 0.25rem;
@@ -328,7 +323,6 @@
         }
       }
 
-      /* Scrollbar */
       ::-webkit-scrollbar {
         width: 6px;
       }
@@ -342,7 +336,6 @@
         border-radius: 3px;
       }
 
-      /* Performance optimizations */
       .glass-card,
       .blog-card,
       .project-card,
@@ -846,7 +839,7 @@
             
             card.innerHTML = `
               <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-green-400 flex-1 mr-2 text-center">
+                <h3 class="text-xl font-bold text-green-400 flex-1 mr-2">
                   <i class="fas fa-folder mr-2"></i>${repo.name}
                 </h3>
                 <div class="flex items-center space-x-2 text-sm text-gray-400">
@@ -855,7 +848,7 @@
                 </div>
               </div>
               
-              <p class="text-gray-300 mb-4 text-sm leading-relaxed min-h-[2.5rem] text-center">
+              <p class="text-gray-300 mb-4 text-sm leading-relaxed min-h-[2.5rem]">
                 ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
@@ -995,4 +988,4 @@
       });
     </script>
   </body>
-              </html>
+  </html>
