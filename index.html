@@ -814,22 +814,7 @@
               day: 'numeric'
             });
             
-            // Hangi hesaptan geldiğini göster
-            const isMainAccount = repo.owner.login === githubUsername;
-            const accountBadge = isMainAccount ? 
-              `<span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
-                <i class="fab fa-github mr-1"></i>${githubUsername}
-              </span>` :
-              `<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">
-                <i class="fab fa-github mr-1"></i>${githubUsername2}
-              </span>`;
-            
-            const languageBadge = repo.language ? 
-              `<span class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full">
-                <i class="fas fa-code mr-1"></i>${repo.language}
-              </span>` : '';
-            
-            const topicBadges = (repo.topics || []).slice(0, 2).map(topic => 
+            const topicBadges = (repo.topics || []).slice(0, 3).map(topic => 
               `<span class="text-xs bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full">#${topic}</span>`
             ).join(' ');
             
@@ -852,9 +837,7 @@
                 ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
-              <div class="flex flex-wrap justify-center gap-2 mb-4 min-h-[2rem]">
-                ${accountBadge}
-                ${languageBadge}
+              <div class="flex flex-wrap justify-start gap-2 mb-4 min-h-[2rem]">
                 ${topicBadges}
               </div>
               
@@ -988,4 +971,4 @@
       });
     </script>
   </body>
-  </html>
+            </html>
