@@ -814,17 +814,12 @@
               day: 'numeric'
             });
             
-            // Hangi hesaptan geldiğini göster - dpentx yeşil, dtxapplist mor
-            const isMainAccount = repo.owner.login === githubUsername;
-            const accountBadge = isMainAccount ? 
-              `<span class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full">
-                <i class="fab fa-github mr-1"></i>${githubUsername}
-              </span>` :
-              `<span class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">
-                <i class="fab fa-github mr-1"></i>${githubUsername2}
-              </span>`;
+            // Programlama dilini göster
+            const languageText = repo.language ? 
+              `<span class="text-orange-400 font-medium text-sm">${repo.language}</span>` : 
+              `<span class="text-gray-400 font-medium text-sm">Belirtilmemiş</span>`;
             
-            const topicBadges = (repo.topics || []).slice(0, 2).map(topic => 
+            const topicBadges = (repo.topics || []).slice(0, 3).map(topic => 
               `<span class="text-xs bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full">#${topic}</span>`
             ).join(' ');
             
@@ -843,12 +838,15 @@
                 </div>
               </div>
               
-              <p class="text-gray-300 mb-4 text-sm leading-relaxed min-h-[2.5rem]">
+              <p class="text-gray-300 mb-3 text-sm leading-relaxed min-h-[2.5rem]">
                 ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
-              <div class="flex flex-wrap justify-start gap-2 mb-4 min-h-[2rem]">
-                ${accountBadge}
+              <div class="mb-3">
+                ${languageText}
+              </div>
+              
+              <div class="flex flex-wrap justify-start gap-2 mb-4 min-h-[1.5rem]">
                 ${topicBadges}
               </div>
               
@@ -982,4 +980,4 @@
       });
     </script>
   </body>
-                    </html>
+              </html>
