@@ -838,16 +838,21 @@
                 </div>
               </div>
               
-              <p class="text-gray-300 mb-3 text-sm leading-relaxed min-h-[2.5rem]">
+              <p class="text-gray-300 mb-4 text-sm leading-relaxed min-h-[2.5rem]">
                 ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
-              <div class="mb-3">
+              <div class="flex flex-wrap justify-start gap-2 mb-3 min-h-[1.5rem]">
+                ${topicBadges}
+              </div>
+              
+              <div class="mb-2">
                 ${languageText}
               </div>
               
-              <div class="flex flex-wrap justify-start gap-2 mb-4 min-h-[1.5rem]">
-                ${topicBadges}
+              <div class="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-gray-600">
+                <span><i class="fas fa-clock mr-1"></i>${updateDate}</span>
+                <span class="text-green-400"><i class="fas fa-external-link-alt mr-1"></i>Görüntüle</span>
               </div>
               
               <div class="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-gray-600">
@@ -980,4 +985,4 @@
       });
     </script>
   </body>
-              </html>
+                </html>
