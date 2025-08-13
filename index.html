@@ -842,16 +842,15 @@
                 ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
               </p>
               
-              <div class="flex flex-wrap justify-start gap-2 mb-3 min-h-[1.5rem]">
+              <div class="flex flex-wrap justify-start gap-2 mb-4 min-h-[1.5rem]">
                 ${topicBadges}
               </div>
               
-              <div class="mb-2">
-                ${languageText}
-              </div>
-              
               <div class="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-gray-600">
-                <span><i class="fas fa-clock mr-1"></i>${updateDate}</span>
+                <div class="flex items-center space-x-3">
+                  <span><i class="fas fa-clock mr-1"></i>${updateDate}</span>
+                  ${languageText}
+                </div>
                 <span class="text-green-400"><i class="fas fa-external-link-alt mr-1"></i>Görüntüle</span>
               </div>
               
