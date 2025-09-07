@@ -32,9 +32,10 @@
             background: radial-gradient(ellipse at top, #1e1b4b 0%, #0a0a0a 50%, #000000 100%);
             color: var(--text-primary);
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Animated Background */
+        /* Static Background */
         .animated-bg {
             position: fixed;
             top: 0;
@@ -46,13 +47,6 @@
                 radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
-            animation: float 20s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(20px, -20px) rotate(1deg); }
-            66% { transform: translate(-10px, 10px) rotate(-1deg); }
         }
 
         /* Glass morphism */
@@ -103,27 +97,29 @@
             box-shadow: 0 4px 20px var(--glow);
         }
 
+        /* Page System */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 100px 20px 40px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Hero Section */
         .hero-title {
             background: linear-gradient(135deg, #ffffff 0%, #a3a3a3 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
-            to { text-shadow: 0 0 30px rgba(139, 92, 246, 0.8); }
-        }
-
-        .hero-subtitle {
-            animation: slideUp 1s ease-out 0.5s both;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Cards */
@@ -153,23 +149,6 @@
 
         .card:hover {
             transform: translateY(-10px) scale(1.02);
-        }
-
-        /* Static floating elements */
-        .float {
-            /* No animation - keeping only the class for potential future use */
-        }
-
-        /* Content sections */
-        .content-section {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
-        }
-
-        .content-section.visible {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         /* Skills animation */
@@ -249,26 +228,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-fixed {
-                position: fixed;
-                bottom: 20px;
-                top: auto;
-                width: calc(100% - 40px);
-                max-width: none;
-            }
-            
-            .hero-title {
-                font-size: 2.5rem;
-            }
-        }
-
-        /* Stats counter animation */
-        .stat-number {
-            transition: all 0.3s ease;
-        }
-
         /* Gradient text effects */
         .gradient-text {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
@@ -305,6 +264,25 @@
         .contact-link:hover::before {
             opacity: 0.1;
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-fixed {
+                position: fixed;
+                bottom: 20px;
+                top: auto;
+                width: calc(100% - 40px);
+                max-width: none;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .page {
+                padding: 40px 16px 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -313,89 +291,91 @@
     <!-- Navigation -->
     <nav class="nav-fixed glass px-6 py-3">
         <div class="flex items-center space-x-2">
-            <div class="nav-item active px-4 py-2 cursor-pointer text-sm font-medium" data-section="hero">
+            <div class="nav-item active px-4 py-2 cursor-pointer text-sm font-medium" data-page="home">
                 <i class="fas fa-home mr-2"></i>Ana Sayfa
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-section="about">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="about">
                 <i class="fas fa-user mr-2"></i>Hakkımda
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-section="blog">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="blog">
                 <i class="fas fa-blog mr-2"></i>Blog
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-section="projects">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="projects">
                 <i class="fas fa-code mr-2"></i>Projeler
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-section="contact">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="contact">
                 <i class="fas fa-envelope mr-2"></i>İletişim
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="hero" class="min-h-screen flex items-center justify-center px-4">
-        <div class="text-center max-w-6xl mx-auto">
-            <div class="glass p-8 mb-8">
-                <div class="flex flex-col lg:flex-row items-center gap-8">
-                    <div class="float">
-                        <div class="w-40 h-40 lg:w-48 lg:h-48 relative">
-                            <img id="avatar" src="" alt="Profil" class="w-full h-full rounded-full object-cover border-4 border-transparent" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) padding-box, linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) border-box;">
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <div class="min-h-screen flex items-center justify-center">
+            <div class="text-center max-w-6xl mx-auto">
+                <div class="glass p-8 mb-8">
+                    <div class="flex flex-col lg:flex-row items-center gap-8">
+                        <div>
+                            <div class="w-40 h-40 lg:w-48 lg:h-48 relative">
+                                <img id="avatar" src="" alt="Profil" class="w-full h-full rounded-full object-cover border-4 border-transparent" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) padding-box, linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) border-box;">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex-1 text-center lg:text-left">
-                        <h1 id="username" class="hero-title text-5xl lg:text-7xl font-bold mb-6">GitHub Kullanıcısı</h1>
-                        <p class="hero-subtitle text-xl lg:text-2xl text-gray-300 mb-8 leading-relaxed">
-                            NixOS ile ilgilenen ve çeviri yapan biriyim. Açık kaynak projelere katkı sağlamayı ve 
-                            teknolojinin insanlara fayda sağlayacak şekilde kullanılmasını destekliyorum.
-                        </p>
                         
-                        <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
-                            <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                <i class="fas fa-linux mr-2 text-blue-400"></i>NixOS
-                            </span>
-                            <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                <i class="fas fa-language mr-2 text-green-400"></i>Çevirmen
-                            </span>
-                            <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                <i class="fas fa-code-branch mr-2 text-purple-400"></i>Açık Kaynak
-                            </span>
-                            <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                <i class="fas fa-blog mr-2 text-pink-400"></i>Blog Yazarı
-                            </span>
+                        <div class="flex-1 text-center lg:text-left">
+                            <h1 id="username" class="hero-title text-5xl lg:text-7xl font-bold mb-6">GitHub Kullanıcısı</h1>
+                            <p class="text-xl lg:text-2xl text-gray-300 mb-8 leading-relaxed">
+                                NixOS ile ilgilenen ve çeviri yapan biriyim. Açık kaynak projelere katkı sağlamayı ve 
+                                teknolojinin insanlara fayda sağlayacak şekilde kullanılmasını destekliyorum.
+                            </p>
+                            
+                            <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
+                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
+                                    <i class="fas fa-linux mr-2 text-blue-400"></i>NixOS
+                                </span>
+                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
+                                    <i class="fas fa-language mr-2 text-green-400"></i>Çevirmen
+                                </span>
+                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
+                                    <i class="fas fa-code-branch mr-2 text-purple-400"></i>Açık Kaynak
+                                </span>
+                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
+                                    <i class="fas fa-blog mr-2 text-pink-400"></i>Blog Yazarı
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card glass p-6 text-center float">
-                    <i class="fas fa-blog text-4xl mb-4 text-pink-400"></i>
-                    <h3 class="text-xl font-bold gradient-text mb-2">Blog Yazıları</h3>
-                    <div class="stat-number text-3xl font-bold text-white" id="blog-count">0</div>
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card glass p-6 text-center">
+                        <i class="fas fa-blog text-4xl mb-4 text-pink-400"></i>
+                        <h3 class="text-xl font-bold gradient-text mb-2">Blog Yazıları</h3>
+                        <div class="text-3xl font-bold text-white" id="blog-count">0</div>
+                    </div>
+                    <div class="card glass p-6 text-center">
+                        <i class="fas fa-code text-4xl mb-4 text-green-400"></i>
+                        <h3 class="text-xl font-bold gradient-text mb-2">GitHub Projeleri</h3>
+                        <div class="text-3xl font-bold text-white" id="repo-count">0</div>
+                    </div>
+                    <div class="card glass p-6 text-center">
+                        <i class="fas fa-star text-4xl mb-4 text-yellow-400"></i>
+                        <h3 class="text-xl font-bold gradient-text mb-2">GitHub Yıldızları</h3>
+                        <div class="text-3xl font-bold text-white" id="stars-count">0</div>
+                    </div>
                 </div>
-                <div class="card glass p-6 text-center float">
-                    <i class="fas fa-code text-4xl mb-4 text-green-400"></i>
-                    <h3 class="text-xl font-bold gradient-text mb-2">GitHub Projeleri</h3>
-                    <div class="stat-number text-3xl font-bold text-white" id="repo-count">0</div>
-                </div>
-                <div class="card glass p-6 text-center float">
-                    <i class="fas fa-star text-4xl mb-4 text-yellow-400"></i>
-                    <h3 class="text-xl font-bold gradient-text mb-2">GitHub Yıldızları</h3>
-                    <div class="stat-number text-3xl font-bold text-white" id="stars-count">0</div>
-                </div>
-            </div>
 
-            <!-- Visitor Counter -->
-            <div class="glass p-6 inline-block">
-                <p class="text-sm text-gray-400 mb-3">🌟 Hoş geldin yolcu 🌟</p>
-                <img src="https://count.getloli.com/@dpentx?name=plexa&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="ziyaretçi sayısı" class="mx-auto">
+                <!-- Visitor Counter -->
+                <div class="glass p-6 inline-block">
+                    <p class="text-sm text-gray-400 mb-3">🌟 Hoş geldin yolcu 🌟</p>
+                    <img src="https://count.getloli.com/@dpentx?name=plexa&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="ziyaretçi sayısı" class="mx-auto">
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- About Section -->
-    <section id="about" class="content-section min-h-screen py-20 px-4">
+    <!-- About Page -->
+    <div id="about" class="page">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-5xl lg:text-6xl font-bold text-center mb-16 gradient-text">
                 <i class="fas fa-user-circle mr-4"></i>Hakkımda
@@ -475,10 +455,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Blog Section -->
-    <section id="blog" class="content-section min-h-screen py-20 px-4">
+    <!-- Blog Page -->
+    <div id="blog" class="page">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-5xl lg:text-6xl font-bold text-center mb-16 gradient-text">
                 <i class="fas fa-blog mr-4"></i>Blog Yazıları
@@ -496,10 +476,10 @@
                 <p class="text-2xl text-gray-400">Henüz blog yazısı bulunmuyor.</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Projects Section -->
-    <section id="projects" class="content-section min-h-screen py-20 px-4">
+    <!-- Projects Page -->
+    <div id="projects" class="page">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-5xl lg:text-6xl font-bold text-center mb-16 gradient-text">
                 <i class="fas fa-code mr-4"></i>GitHub Projelerim
@@ -517,10 +497,10 @@
                 <p class="text-2xl text-gray-400">Henüz proje bulunmuyor.</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Contact Section -->
-    <section id="contact" class="content-section min-h-screen py-20 px-4 mt-32">
+    <!-- Contact Page -->
+    <div id="contact" class="page">
         <div class="max-w-4xl mx-auto">
             <h2 class="text-5xl lg:text-6xl font-bold text-center mb-16 gradient-text">
                 <i class="fas fa-envelope mr-4"></i>İletişim
@@ -568,7 +548,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Blog Modal -->
     <div id="blog-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;">
@@ -592,41 +572,39 @@
         const githubUsername2 = "dtxapplist";
         const repoName = "dpentx.github.io";
 
-        // Navigation
+        // Page Navigation System
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
-                const section = item.dataset.section;
+                const targetPage = item.dataset.page;
+                
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show target page
+                document.getElementById(targetPage).classList.add('active');
                 
                 // Update active nav
                 document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-                
-                // Scroll to section
-                document.getElementById(section).scrollIntoView({ behavior: 'smooth' });
             });
         });
 
-        // Intersection Observer for section visibility
-        const observerOptions = { threshold: 0.1, rootMargin: '-100px' };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    
-                    // Update active nav based on visible section
-                    const sectionId = entry.target.id;
-                    document.querySelectorAll('.nav-item').forEach(nav => {
-                        nav.classList.remove('active');
-                        if (nav.dataset.section === sectionId) {
-                            nav.classList.add('active');
-                        }
-                    });
+        // Counter animation
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            let current = 0;
+            const increment = targetValue / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= targetValue) {
+                    current = targetValue;
+                    clearInterval(timer);
                 }
-            });
-        }, observerOptions);
-
-        // Observe all sections
-        document.querySelectorAll('section').forEach(section => observer.observe(section));
+                element.textContent = Math.floor(current);
+            }, 30);
+        }
 
         // GitHub profil bilgilerini çek
         async function loadProfile() {
@@ -659,21 +637,6 @@
                 document.getElementById("repo-count").textContent = "0";
                 document.getElementById("stars-count").textContent = "0";
             }
-        }
-
-        // Counter animation
-        function animateCounter(elementId, targetValue) {
-            const element = document.getElementById(elementId);
-            let current = 0;
-            const increment = targetValue / 50;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= targetValue) {
-                    current = targetValue;
-                    clearInterval(timer);
-                }
-                element.textContent = Math.floor(current);
-            }, 30);
         }
 
         // Blog yazılarını çek
@@ -900,7 +863,7 @@
                             <span><i class="fas fa-file-alt mr-2"></i>Markdown</span>
                         </div>
                     </div>
-                    <div class="prose prose-invert max-w-none">
+                    <div class="prose prose-invert max-w-none text-gray-300">
                         ${html}
                     </div>
                 `;
@@ -935,35 +898,6 @@
             }
         });
 
-        // Parallax effect for hero section
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.getElementById('hero');
-            if (hero) {
-                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-            }
-        });
-
-        // Smooth reveal animations
-        const revealElements = document.querySelectorAll('.card, .skill-item');
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }, index * 100);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        revealElements.forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
-            revealObserver.observe(el);
-        });
-
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadProfile();
@@ -972,4 +906,4 @@
         });
     </script>
 </body>
-                    </html>
+    </html>
