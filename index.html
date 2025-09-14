@@ -8,17 +8,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #0a0a0a;
-            --bg-darker: #000000;
-            --bg-card: rgba(15, 15, 15, 0.8);
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --accent-primary: #6366f1;
-            --accent-secondary: #8b5cf6;
-            --accent-tertiary: #06b6d4;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --glow: rgba(99, 102, 241, 0.5);
+            /* Everforest Dark Palette */
+            --bg-darker: #232a2e;
+            --bg-dark: #2d353b;
+            --bg-light: #343f44;
+            --bg-lighter: #3d484d;
+            --bg-overlay: rgba(45, 53, 59, 0.9);
+            --text-primary: #d3c6aa;
+            --text-secondary: #859289;
+            --text-dim: #7a8478;
+            
+            /* Everforest Colors */
+            --red: #e67e80;
+            --orange: #e69875;
+            --yellow: #dbbc7f;
+            --green: #a7c080;
+            --aqua: #83c092;
+            --blue: #7fbbb3;
+            --purple: #d699b6;
+            --fg: #d3c6aa;
+            
+            /* Accent Colors */
+            --accent-primary: #a7c080;
+            --accent-secondary: #7fbbb3;
+            --accent-tertiary: #83c092;
+            --accent-success: #a7c080;
+            --accent-warning: #dbbc7f;
+            --accent-error: #e67e80;
+            --glow: rgba(167, 192, 128, 0.3);
         }
 
         * {
@@ -29,13 +46,13 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: radial-gradient(ellipse at top, #1e1b4b 0%, #0a0a0a 50%, #000000 100%);
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 50%, var(--bg-light) 100%);
             color: var(--text-primary);
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* Static Background */
+        /* Everforest Background Pattern */
         .animated-bg {
             position: fixed;
             top: 0;
@@ -44,19 +61,20 @@
             height: 100%;
             z-index: -2;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(167, 192, 128, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(127, 187, 179, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(131, 192, 146, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
         }
 
-        /* Glass morphism */
+        /* Glass morphism with Everforest styling */
         .glass {
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: var(--bg-overlay);
+            border: 1px solid rgba(167, 192, 128, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(35, 42, 46, 0.5);
         }
 
         /* Navigation */
@@ -74,6 +92,7 @@
             border-radius: 12px;
             position: relative;
             overflow: hidden;
+            color: var(--text-secondary);
         }
 
         .nav-item::before {
@@ -83,7 +102,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(167, 192, 128, 0.1), transparent);
             transition: all 0.5s;
         }
 
@@ -91,9 +110,14 @@
             left: 100%;
         }
 
+        .nav-item:hover {
+            color: var(--accent-primary);
+        }
+
         .nav-item.active {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: white;
+            color: var(--bg-dark);
+            font-weight: 600;
             box-shadow: 0 4px 20px var(--glow);
         }
 
@@ -116,7 +140,7 @@
 
         /* Hero Section */
         .hero-title {
-            background: linear-gradient(135deg, #ffffff 0%, #a3a3a3 100%);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -127,6 +151,8 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            background: var(--bg-light);
+            border: 1px solid rgba(167, 192, 128, 0.1);
         }
 
         .card::before {
@@ -137,7 +163,7 @@
             right: -2px;
             bottom: -2px;
             background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
-            border-radius: 22px;
+            border-radius: 18px;
             z-index: -1;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -148,18 +174,24 @@
         }
 
         .card:hover {
-            transform: translateY(-10px) scale(1.02);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(35, 42, 46, 0.3);
         }
 
         /* Skills animation */
         .skill-item {
             transition: all 0.3s ease;
+            background: var(--bg-lighter);
+            border: 1px solid rgba(167, 192, 128, 0.2);
+            color: var(--text-secondary);
         }
 
         .skill-item:hover {
             transform: scale(1.1);
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: white;
+            color: var(--bg-dark);
+            border-color: transparent;
+            font-weight: 500;
         }
 
         /* Blog/Project cards */
@@ -167,6 +199,7 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
+            background: var(--bg-light);
         }
 
         .project-card::after {
@@ -176,7 +209,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(167, 192, 128, 0.1), transparent);
             transition: all 0.6s;
         }
 
@@ -187,11 +220,13 @@
         /* Modal */
         .modal {
             backdrop-filter: blur(20px);
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(35, 42, 46, 0.95);
         }
 
         .modal-content {
             animation: modalSlideIn 0.3s ease-out;
+            background: var(--bg-light);
+            border: 1px solid rgba(167, 192, 128, 0.2);
         }
 
         @keyframes modalSlideIn {
@@ -205,7 +240,7 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-darker);
+            background: var(--bg-dark);
         }
 
         ::-webkit-scrollbar-thumb {
@@ -217,7 +252,7 @@
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(99, 102, 241, 0.3);
+            border: 3px solid rgba(167, 192, 128, 0.3);
             border-top: 3px solid var(--accent-primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -239,13 +274,15 @@
         /* Interactive elements */
         .interactive:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 25px rgba(167, 192, 128, 0.2);
         }
 
         /* Contact links */
         .contact-link {
             position: relative;
             overflow: hidden;
+            background: var(--bg-light);
+            border: 1px solid rgba(167, 192, 128, 0.2);
         }
 
         .contact-link::before {
@@ -263,6 +300,45 @@
 
         .contact-link:hover::before {
             opacity: 0.1;
+        }
+
+        .contact-link:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-5px);
+        }
+
+        /* Prose styling for blog content */
+        .prose {
+            color: var(--text-primary);
+        }
+
+        .prose h1, .prose h2, .prose h3, .prose h4 {
+            color: var(--accent-primary);
+        }
+
+        .prose code {
+            background: var(--bg-darker);
+            color: var(--accent-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .prose blockquote {
+            border-left: 4px solid var(--accent-primary);
+            background: var(--bg-darker);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .prose a {
+            color: var(--accent-secondary);
+            text-decoration: underline;
+        }
+
+        .prose a:hover {
+            color: var(--accent-primary);
         }
 
         /* Responsive */
@@ -283,6 +359,15 @@
                 padding: 40px 16px 120px;
             }
         }
+
+        /* Custom Everforest accent colors for icons */
+        .icon-red { color: var(--red); }
+        .icon-orange { color: var(--orange); }
+        .icon-yellow { color: var(--yellow); }
+        .icon-green { color: var(--green); }
+        .icon-aqua { color: var(--aqua); }
+        .icon-blue { color: var(--blue); }
+        .icon-purple { color: var(--purple); }
     </style>
 </head>
 <body>
@@ -294,16 +379,16 @@
             <div class="nav-item active px-4 py-2 cursor-pointer text-sm font-medium" data-page="home">
                 <i class="fas fa-home mr-2"></i>
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="about">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium" data-page="about">
                 <i class="fas fa-user mr-2"></i>
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="blog">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium" data-page="blog">
                 <i class="fas fa-blog mr-2"></i>
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="projects">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium" data-page="projects">
                 <i class="fas fa-code mr-2"></i>
             </div>
-            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium hover:text-white" data-page="contact">
+            <div class="nav-item px-4 py-2 cursor-pointer text-sm font-medium" data-page="contact">
                 <i class="fas fa-envelope mr-2"></i>
             </div>
         </div>
@@ -323,23 +408,23 @@
                         
                         <div class="flex-1 text-center lg:text-left">
                             <h1 id="username" class="hero-title text-5xl lg:text-7xl font-bold mb-6">GitHub Kullanıcısı</h1>
-                            <p class="text-xl lg:text-2xl text-gray-300 mb-8 leading-relaxed">
+                            <p class="text-xl lg:text-2xl mb-8 leading-relaxed" style="color: var(--text-secondary);">
                                 NixOS ile ilgilenen ve çeviri yapan biriyim. Açık kaynak projelere katkı sağlamayı ve 
                                 teknolojinin insanlara fayda sağlayacak şekilde kullanılmasını destekliyorum.
                             </p>
                             
                             <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
-                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                    <i class="fa-brands fa-linux" style="color: #5277C3;"></i></i>NixOS
+                                <span class="skill-item px-4 py-2 rounded-full text-sm interactive">
+                                    <i class="fa-brands fa-linux icon-blue mr-2"></i>NixOS
                                 </span>
-                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                    <i class="fas fa-language mr-2 text-green-400"></i>Çevirmen
+                                <span class="skill-item px-4 py-2 rounded-full text-sm interactive">
+                                    <i class="fas fa-language mr-2 icon-green"></i>Çevirmen
                                 </span>
-                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                    <i class="fas fa-code-branch mr-2 text-purple-400"></i>Açık Kaynak
+                                <span class="skill-item px-4 py-2 rounded-full text-sm interactive">
+                                    <i class="fas fa-code-branch mr-2 icon-purple"></i>Açık Kaynak
                                 </span>
-                                <span class="skill-item px-4 py-2 bg-gray-800 rounded-full text-sm border border-gray-700 interactive">
-                                    <i class="fas fa-blog mr-2 text-pink-400"></i>Blog Yazarı
+                                <span class="skill-item px-4 py-2 rounded-full text-sm interactive">
+                                    <i class="fas fa-blog mr-2 icon-orange"></i>Blog Yazarı
                                 </span>
                             </div>
                         </div>
@@ -349,26 +434,26 @@
                 <!-- Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="card glass p-6 text-center">
-                        <i class="fas fa-blog text-4xl mb-4 text-pink-400"></i>
+                        <i class="fas fa-blog text-4xl mb-4 icon-orange"></i>
                         <h3 class="text-xl font-bold gradient-text mb-2">Blog Yazıları</h3>
-                        <div class="text-3xl font-bold text-white" id="blog-count">0</div>
+                        <div class="text-3xl font-bold" style="color: var(--text-primary);" id="blog-count">0</div>
                     </div>
                     <div class="card glass p-6 text-center">
-                        <i class="fas fa-code text-4xl mb-4 text-green-400"></i>
+                        <i class="fas fa-code text-4xl mb-4 icon-green"></i>
                         <h3 class="text-xl font-bold gradient-text mb-2">GitHub Projeleri</h3>
-                        <div class="text-3xl font-bold text-white" id="repo-count">0</div>
+                        <div class="text-3xl font-bold" style="color: var(--text-primary);" id="repo-count">0</div>
                     </div>
                     <div class="card glass p-6 text-center">
-                        <i class="fas fa-star text-4xl mb-4 text-yellow-400"></i>
+                        <i class="fas fa-star text-4xl mb-4 icon-yellow"></i>
                         <h3 class="text-xl font-bold gradient-text mb-2">GitHub Yıldızları</h3>
-                        <div class="text-3xl font-bold text-white" id="stars-count">0</div>
+                        <div class="text-3xl font-bold" style="color: var(--text-primary);" id="stars-count">0</div>
                     </div>
                 </div>
 
                 <!-- Visitor Counter -->
                 <div class="glass p-6 inline-block">
-                    <p class="text-sm text-gray-400 mb-3">🌟 Hoş geldin yolcu 🌟</p>
-                    <img src="https://count.getloli.com/@dpentx?name=plexa&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="ziyaretçi sayısı" class="mx-auto">
+                    <p class="text-sm mb-3" style="color: var(--text-secondary);">🌲 Hoş geldin orman yolcusu 🌲</p>
+                    <img src="https://count.getloli.com/@dpentx?name=everforest&theme=rule34&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=1" alt="ziyaretçi sayısı" class="mx-auto">
                 </div>
             </div>
         </div>
@@ -383,10 +468,10 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="card glass p-8">
-                    <h3 class="text-3xl font-bold mb-6 text-white">
-                        <i class="fas fa-heart mr-3 text-red-400"></i>Tutkularım
+                    <h3 class="text-3xl font-bold mb-6" style="color: var(--text-primary);">
+                        <i class="fas fa-heart mr-3 icon-red"></i>Tutkularım
                     </h3>
-                    <p class="text-gray-300 leading-relaxed mb-6 text-lg">
+                    <p class="leading-relaxed mb-6 text-lg" style="color: var(--text-secondary);">
                         Merhaba! Ben bir teknoloji tutkunu ve açık kaynak yazılım sevdalısıyım. 
                         NixOS kullanıcısıyım ve bu ekosistemin güçlü yanlarını keşfetmeyi seviyorum. 
                         Çeviri işleri yapıyor, teknoloji dünyasındaki yenilikleri takip ediyor ve 
@@ -394,59 +479,59 @@
                     </p>
                     
                     <div class="space-y-3">
-                        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg interactive">
-                            <i class="fas fa-code text-blue-400 text-xl mr-3"></i>
+                        <div class="flex items-center p-3 rounded-lg interactive" style="background: var(--bg-darker);">
+                            <i class="fas fa-code icon-blue text-xl mr-3"></i>
                             <span>NixOS & Linux Araştırıcısı</span>
                         </div>
-                        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg interactive">
-                            <i class="fas fa-language text-green-400 text-xl mr-3"></i>
+                        <div class="flex items-center p-3 rounded-lg interactive" style="background: var(--bg-darker);">
+                            <i class="fas fa-language icon-green text-xl mr-3"></i>
                             <span>Çevirmen & Lokalizasyon</span>
                         </div>
-                        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg interactive">
-                            <i class="fas fa-blog text-pink-400 text-xl mr-3"></i>
+                        <div class="flex items-center p-3 rounded-lg interactive" style="background: var(--bg-darker);">
+                            <i class="fas fa-blog icon-orange text-xl mr-3"></i>
                             <span>Teknik Blog Yazarı</span>
                         </div>
-                        <div class="flex items-center p-3 bg-gray-800/50 rounded-lg interactive">
-                            <i class="fas fa-code-branch text-purple-400 text-xl mr-3"></i>
+                        <div class="flex items-center p-3 rounded-lg interactive" style="background: var(--bg-darker);">
+                            <i class="fas fa-code-branch icon-purple text-xl mr-3"></i>
                             <span>Açık Kaynak Geliştirici</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="card glass p-8">
-                    <h3 class="text-3xl font-bold mb-6 text-white">
-                        <i class="fas fa-tools mr-3 text-orange-400"></i>Teknoloji Yığınım
+                    <h3 class="text-3xl font-bold mb-6" style="color: var(--text-primary);">
+                        <i class="fas fa-tools mr-3 icon-yellow"></i>Teknoloji Yığınım
                     </h3>
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-                        <div class="skill-item p-3 bg-gray-800/50 rounded-lg text-center">
-                            <i class="fas fa-linux text-blue-400 text-2xl mb-2"></i>
+                        <div class="skill-item p-3 rounded-lg text-center">
+                            <i class="fas fa-linux icon-blue text-2xl mb-2"></i>
                             <div class="text-sm">NixOS</div>
                         </div>
-                        <div class="skill-item p-3 bg-gray-800/50 rounded-lg text-center">
-                            <i class="fas fa-terminal text-green-400 text-2xl mb-2"></i>
+                        <div class="skill-item p-3 rounded-lg text-center">
+                            <i class="fas fa-terminal icon-green text-2xl mb-2"></i>
                             <div class="text-sm">Shell</div>
                         </div>
-                        <div class="skill-item p-3 bg-gray-800/50 rounded-lg text-center">
-                            <i class="fas fa-code text-pink-400 text-2xl mb-2"></i>
+                        <div class="skill-item p-3 rounded-lg text-center">
+                            <i class="fas fa-code icon-orange text-2xl mb-2"></i>
                             <div class="text-sm">Git</div>
                         </div>
-                        <div class="skill-item p-3 bg-gray-800/50 rounded-lg text-center">
-                            <i class="fas fa-globe text-purple-400 text-2xl mb-2"></i>
+                        <div class="skill-item p-3 rounded-lg text-center">
+                            <i class="fas fa-globe icon-purple text-2xl mb-2"></i>
                             <div class="text-sm">Web</div>
                         </div>
-                        <div class="skill-item p-3 bg-gray-800/50 rounded-lg text-center">
-                            <i class="fas fa-language text-yellow-400 text-2xl mb-2"></i>
+                        <div class="skill-item p-3 rounded-lg text-center">
+                            <i class="fas fa-language icon-yellow text-2xl mb-2"></i>
                             <div class="text-sm">i18n</div>
                         </div>
-                        <div class="skill-item p-3 bg-gray-800/50 rounded-lg text-center">
-                            <i class="fas fa-pen-fancy text-orange-400 text-2xl mb-2"></i>
+                        <div class="skill-item p-3 rounded-lg text-center">
+                            <i class="fas fa-pen-fancy icon-aqua text-2xl mb-2"></i>
                             <div class="text-sm">Markdown</div>
                         </div>
                     </div>
                     
-                    <div class="p-4 bg-green-900/20 border border-green-700 rounded-lg">
-                        <p class="text-green-300 leading-relaxed">
+                    <div class="p-4 rounded-lg" style="background: rgba(167, 192, 128, 0.1); border: 1px solid var(--accent-primary);">
+                        <p class="leading-relaxed" style="color: var(--accent-primary);">
                             <i class="fas fa-lightbulb mr-2"></i>
                             <strong>Hedefim:</strong> Teknolojinin insanlara daha kolay ulaşabilmesi için çeviri ve dokümantasyon 
                             çalışmalarıma devam etmek, NixOS ekosisteminde daha fazla katkı sağlamak.
@@ -466,14 +551,14 @@
             
             <div id="blog-loading" class="text-center py-20">
                 <div class="loading-spinner mx-auto mb-4"></div>
-                <p class="text-gray-400">Blog yazıları yükleniyor...</p>
+                <p style="color: var(--text-secondary);">Blog yazıları yükleniyor...</p>
             </div>
             
             <div id="blog-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></div>
             
             <div id="no-blogs" class="text-center py-20" style="display: none;">
-                <i class="fas fa-file-alt text-8xl mb-6 opacity-20"></i>
-                <p class="text-2xl text-gray-400">Henüz blog yazısı bulunmuyor.</p>
+                <i class="fas fa-file-alt text-8xl mb-6 opacity-20" style="color: var(--text-dim);"></i>
+                <p class="text-2xl" style="color: var(--text-secondary);">Henüz blog yazısı bulunmuyor.</p>
             </div>
         </div>
     </div>
@@ -487,14 +572,14 @@
             
             <div id="projects-loading" class="text-center py-20">
                 <div class="loading-spinner mx-auto mb-4"></div>
-                <p class="text-gray-400">Projeler yükleniyor...</p>
+                <p style="color: var(--text-secondary);">Projeler yükleniyor...</p>
             </div>
             
             <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></div>
             
             <div id="no-projects" class="text-center py-20" style="display: none;">
-                <i class="fas fa-code text-8xl mb-6 opacity-20"></i>
-                <p class="text-2xl text-gray-400">Henüz proje bulunmuyor.</p>
+                <i class="fas fa-code text-8xl mb-6 opacity-20" style="color: var(--text-dim);"></i>
+                <p class="text-2xl" style="color: var(--text-secondary);">Henüz proje bulunmuyor.</p>
             </div>
         </div>
     </div>
@@ -507,42 +592,42 @@
             </h2>
             
             <div class="card glass p-8">
-                <h3 class="text-3xl font-bold mb-8 text-center text-white">
+                <h3 class="text-3xl font-bold mb-8 text-center" style="color: var(--text-primary);">
                     <i class="fas fa-share-alt mr-3"></i>Benimle İletişime Geçin
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <a href="https://github.com/dpentx" target="_blank" class="contact-link glass p-6 rounded-lg hover:scale-105 transition-all duration-300 block">
+                    <a href="https://github.com/dpentx" target="_blank" class="contact-link p-6 rounded-lg hover:scale-105 transition-all duration-300 block">
                         <div class="text-center">
-                            <i class="fab fa-github text-5xl mb-4 text-white"></i>
-                            <h4 class="text-xl font-bold text-white mb-2">GitHub</h4>
-                            <p class="text-gray-400">Projeler & Katkılar</p>
+                            <i class="fab fa-github text-5xl mb-4" style="color: var(--text-primary);"></i>
+                            <h4 class="text-xl font-bold mb-2" style="color: var(--text-primary);">GitHub</h4>
+                            <p style="color: var(--text-secondary);">Projeler & Katkılar</p>
                         </div>
                     </a>
                     
-                    <a href="https://myanimelist.net/profile/dpenx" target="_blank" class="contact-link glass p-6 rounded-lg hover:scale-105 transition-all duration-300 block">
+                    <a href="https://myanimelist.net/profile/dpenx" target="_blank" class="contact-link p-6 rounded-lg hover:scale-105 transition-all duration-300 block">
                         <div class="text-center">
-                            <i class="fa-solid fa-book-journal-whills text-5xl mb-4 text-pink-400"></i>
-                            <h4 class="text-xl font-bold text-white mb-2">MyAnimeList</h4>
-                            <p class="text-gray-400">Anime Listem</p>
+                            <i class="fa-solid fa-book-journal-whills text-5xl mb-4 icon-orange"></i>
+                            <h4 class="text-xl font-bold mb-2" style="color: var(--text-primary);">MyAnimeList</h4>
+                            <p style="color: var(--text-secondary);">Anime Listem</p>
                         </div>
                     </a>
                     
-                    <a href="https://www.instagram.com/dpenx_?igsh=MXZpaDdjbzJjN29sMQ==" target="_blank" class="contact-link glass p-6 rounded-lg hover:scale-105 transition-all duration-300 block">
+                    <a href="https://www.instagram.com/dpenx_?igsh=MXZpaDdjbzJjN29sMQ==" target="_blank" class="contact-link p-6 rounded-lg hover:scale-105 transition-all duration-300 block">
                         <div class="text-center">
-                            <i class="fa-brands fa-instagram text-5xl mb-4 text-orange-400"></i>
-                            <h4 class="text-xl font-bold text-white mb-2">Instagram</h4>
-                            <p class="text-gray-400">Sohbet & Günlük</p>
+                            <i class="fa-brands fa-instagram text-5xl mb-4 icon-purple"></i>
+                            <h4 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Instagram</h4>
+                            <p style="color: var(--text-secondary);">Sohbet & Günlük</p>
                         </div>
                     </a>
                 </div>
                 
-                <div class="mt-8 p-6 bg-blue-900/20 border border-blue-700 rounded-lg text-center">
-                    <p class="text-lg text-blue-300 leading-relaxed">
+                <div class="mt-8 p-6 rounded-lg text-center" style="background: rgba(167, 192, 128, 0.1); border: 1px solid var(--accent-primary);">
+                    <p class="text-lg leading-relaxed" style="color: var(--accent-primary);">
                         <i class="fas fa-handshake mr-2"></i>
                         <strong>Açık kaynak projelere katkı yapmaktan ve işbirliği yapmaktan mutluluk duyuyorum!</strong>
                     </p>
-                    <p class="text-sm mt-2 text-gray-400">
+                    <p class="text-sm mt-2" style="color: var(--text-secondary);">
                         GitHub üzerinden benimle iletişime geçebilir, projelerime katkı sağlayabilirsiniz.
                     </p>
                 </div>
@@ -553,13 +638,13 @@
     <!-- Blog Modal -->
     <div id="blog-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;">
         <div class="modal-content glass p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
-            <button class="absolute top-4 right-4 w-10 h-10 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-colors" onclick="closeBlogModal()">
+            <button class="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors hover:scale-110" style="background: var(--accent-error);" onclick="closeBlogModal()">
                 <i class="fas fa-times"></i>
             </button>
             <div id="modal-blog-content">
                 <div class="text-center py-20">
                     <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-gray-400">İçerik yükleniyor...</p>
+                    <p style="color: var(--text-secondary);">İçerik yükleniyor...</p>
                 </div>
             </div>
         </div>
@@ -675,22 +760,22 @@
                     const imageExists = await checkImageExists(imagePath);
                     
                     blogCard.innerHTML = `
-                        <div class="h-48 bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                        <div class="h-48 flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));">
                             ${imageExists ? 
                                 `<img src="${imagePath}" alt="${blogTitle}" class="w-full h-full object-cover">` :
-                                `<i class="fas fa-blog text-6xl text-white opacity-80"></i>`
+                                `<i class="fas fa-blog text-6xl opacity-80" style="color: var(--bg-dark);"></i>`
                             }
                         </div>
                         <div class="p-6">
-                            <h3 class="text-xl font-bold mb-3 text-white">${blogTitle}</h3>
-                            <p class="text-gray-400 text-sm mb-4">
+                            <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">${blogTitle}</h3>
+                            <p class="text-sm mb-4" style="color: var(--text-secondary);">
                                 <i class="fas fa-calendar mr-2"></i>Blog yazısını okumak için tıklayın
                             </p>
                             <div class="flex items-center justify-between">
-                                <span class="px-3 py-1 bg-pink-600/20 text-pink-400 rounded-full text-xs border border-pink-600">
+                                <span class="px-3 py-1 rounded-full text-xs border" style="background: rgba(167, 192, 128, 0.1); color: var(--accent-primary); border-color: var(--accent-primary);">
                                     <i class="fas fa-file-alt mr-1"></i>Markdown
                                 </span>
-                                <i class="fas fa-arrow-right text-pink-400"></i>
+                                <i class="fas fa-arrow-right" style="color: var(--accent-primary);"></i>
                             </div>
                         </div>
                     `;
@@ -749,22 +834,22 @@
                     });
                     
                     const languageColors = {
-                        'JavaScript': '#f1e05a',
-                        'Python': '#3572A5',
-                        'HTML': '#e34c26',
-                        'CSS': '#563d7c',
-                        'Java': '#b07219',
-                        'C++': '#f34b7d',
-                        'Go': '#00ADD8',
-                        'Rust': '#dea584',
-                        'TypeScript': '#2b7489',
-                        'Nix': '#7e7eff'
+                        'JavaScript': '#dbbc7f',
+                        'Python': '#7fbbb3',
+                        'HTML': '#e67e80',
+                        'CSS': '#d699b6',
+                        'Java': '#e69875',
+                        'C++': '#e67e80',
+                        'Go': '#83c092',
+                        'Rust': '#e69875',
+                        'TypeScript': '#7fbbb3',
+                        'Nix': '#a7c080'
                     };
                     
-                    const languageColor = languageColors[repo.language] || '#6b7280';
+                    const languageColor = languageColors[repo.language] || 'var(--text-secondary)';
                     
                     const topicBadges = (repo.topics || []).slice(0, 3).map(topic => 
-                        `<span class="px-2 py-1 bg-gray-800/60 text-gray-300 rounded-full text-xs border border-gray-700">#${topic}</span>`
+                        `<span class="px-2 py-1 rounded-full text-xs border" style="background: var(--bg-darker); color: var(--text-secondary); border-color: rgba(167, 192, 128, 0.2);">#${topic}</span>`
                     ).join(' ');
                     
                     const card = document.createElement('div');
@@ -773,16 +858,16 @@
                     
                     card.innerHTML = `
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-bold flex-1 mr-2 text-white">
-                                <i class="fas fa-folder mr-2 text-green-400"></i>${repo.name}
+                            <h3 class="text-xl font-bold flex-1 mr-2" style="color: var(--text-primary);">
+                                <i class="fas fa-folder mr-2 icon-green"></i>${repo.name}
                             </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-400">
-                                <span><i class="fas fa-star mr-1 text-yellow-400"></i>${repo.stargazers_count}</span>
-                                <span><i class="fas fa-code-fork mr-1 text-blue-400"></i>${repo.forks_count}</span>
+                            <div class="flex items-center space-x-3 text-sm" style="color: var(--text-secondary);">
+                                <span><i class="fas fa-star mr-1 icon-yellow"></i>${repo.stargazers_count}</span>
+                                <span><i class="fas fa-code-fork mr-1 icon-blue"></i>${repo.forks_count}</span>
                             </div>
                         </div>
                         
-                        <p class="mb-4 text-sm leading-relaxed min-h-[2.5rem] text-gray-300">
+                        <p class="mb-4 text-sm leading-relaxed min-h-[2.5rem]" style="color: var(--text-secondary);">
                             ${repo.description || '📝 Bu proje için henüz açıklama eklenmemiş'}
                         </p>
                         
@@ -796,12 +881,12 @@
                                     <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${languageColor};"></span>
                                     ${repo.language}
                                 </span>` :
-                                `<span class="text-sm text-gray-500">Belirtilmemiş</span>`
+                                `<span class="text-sm" style="color: var(--text-dim);">Belirtilmemiş</span>`
                             }
-                            <span class="text-xs text-green-400"><i class="fas fa-external-link-alt mr-1"></i>Görüntüle</span>
+                            <span class="text-xs icon-aqua"><i class="fas fa-external-link-alt mr-1"></i>Görüntüle</span>
                         </div>
                         
-                        <div class="flex justify-between items-center text-xs pt-3 border-t border-gray-700 text-gray-500">
+                        <div class="flex justify-between items-center text-xs pt-3 border-t" style="border-color: rgba(167, 192, 128, 0.2); color: var(--text-dim);">
                             <span><i class="fas fa-clock mr-1"></i>${updateDate}</span>
                         </div>
                     `;
@@ -815,10 +900,10 @@
                 noProjects.style.display = 'block';
                 noProjects.innerHTML = `
                     <div class="text-center">
-                        <i class="fas fa-exclamation-triangle text-8xl mb-6 opacity-20 text-red-400"></i>
-                        <p class="text-2xl mb-4 text-red-400">Projeler yüklenirken hata oluştu</p>
-                        <p class="text-sm text-gray-500">${error.message}</p>
-                        <p class="text-xs mt-2 text-gray-600">Lütfen daha sonra tekrar deneyin</p>
+                        <i class="fas fa-exclamation-triangle text-8xl mb-6 opacity-20 icon-red"></i>
+                        <p class="text-2xl mb-4" style="color: var(--accent-error);">Projeler yüklenirken hata oluştu</p>
+                        <p class="text-sm" style="color: var(--text-dim);">${error.message}</p>
+                        <p class="text-xs mt-2" style="color: var(--text-dim);">Lütfen daha sonra tekrar deneyin</p>
                     </div>
                 `;
             }
@@ -844,7 +929,7 @@
             content.innerHTML = `
                 <div class="text-center py-20">
                     <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-gray-400">İçerik yükleniyor...</p>
+                    <p style="color: var(--text-secondary);">İçerik yükleniyor...</p>
                 </div>
             `;
             
@@ -858,21 +943,21 @@
                         <h1 class="text-4xl font-bold mb-4 gradient-text">
                             ${title}
                         </h1>
-                        <div class="flex items-center space-x-4 text-sm text-gray-400">
+                        <div class="flex items-center space-x-4 text-sm" style="color: var(--text-secondary);">
                             <span><i class="fas fa-calendar mr-2"></i>Blog Yazısı</span>
                             <span><i class="fas fa-file-alt mr-2"></i>Markdown</span>
                         </div>
                     </div>
-                    <div class="prose prose-invert max-w-none text-gray-300">
+                    <div class="prose prose-invert max-w-none">
                         ${html}
                     </div>
                 `;
             } catch (error) {
                 content.innerHTML = `
                     <div class="text-center py-20">
-                        <i class="fas fa-exclamation-triangle text-8xl mb-6 text-red-400"></i>
-                        <h3 class="text-2xl font-semibold mb-4 text-red-400">İçerik yüklenirken hata oluştu</h3>
-                        <p class="text-gray-400">Lütfen daha sonra tekrar deneyin.</p>
+                        <i class="fas fa-exclamation-triangle text-8xl mb-6 icon-red"></i>
+                        <h3 class="text-2xl font-semibold mb-4" style="color: var(--accent-error);">İçerik yüklenirken hata oluştu</h3>
+                        <p style="color: var(--text-secondary);">Lütfen daha sonra tekrar deneyin.</p>
                     </div>
                 `;
             }
@@ -906,4 +991,4 @@
         });
     </script>
 </body>
-    </html>
+                                                </html>
